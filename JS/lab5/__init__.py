@@ -1,2 +1,0 @@
-import txt
-import fibo
