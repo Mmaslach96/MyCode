@@ -1,43 +1,3 @@
-import datetime
-
-class Moneta:
-    def __init__(self, x):
-        y = [1, 2, 5, 10, 20, 50, 100, 200, 500]
-        if x not in y:
-            x = 0
-        self._x = x
-
-    def wypisz(self):
-        print(self._x)
-
-    def get_x(self) -> int:
-        return self._x
-
-class Banknot(Moneta):
-    def __init__(self,x):
-        y = [1000,2000,5000,10000,20000,500000]
-        if x not in y:
-            x = 0
-        self._x = x
-
-class Data:
-    def __init__(self,x):
-        self._x=x
-
-    def getx(self):
-        return self._x
-
-    def obecnaData(self):
-        self.now = datetime.datetime.now()
-        self.now = self.now.strftime("%Y-%m-%d %H:%M")
-        return self.now
-
-    def dataWybrana(self):
-        now = datetime.datetime.now()
-        self.new = now + datetime.timedelta(minutes = Data.getx(self))
-        self.new = self.new.strftime("%Y-%m-%d %H:%M")
-        return self.new
-
 class Licznik:
 
     def __init__(self,x):
@@ -55,7 +15,7 @@ class Licznik:
         else:
             self._x=self._x-60
             a = self._x // 60
-            b = self._x % 60 >0
+            b = self._x % 60
             if(b>0):
                 return Licznik.jedenH(self) + (a+1)*400
             else:
@@ -68,9 +28,9 @@ class Licznik:
         else:
             self._x = self._x - 1440
             a = self._x // 1440
-            b = self._x % 1440 > 0
+            b = self._x % 1440
             if (b > 0):
-                return Licznik.dwaH(self) + (a + 1) * 10000
+                return Licznik.dwaH(self) + (a+1) * 10000
             else:
                 return Licznik.dwaH(self) + a * 10000
 
@@ -78,34 +38,37 @@ class Licznik:
         if (self._x <= 2880):
             return Licznik.dwaczteryH(self)
         else:
-            self._x = self._x - 2880
             a = self._x // 2880
-            b = self._x % 2880 > 0
-            if (b > 0):
-                return Licznik.dwaczteryH(self) + (a + 1) * 25000
+            if (a > 1):
+                self._x = self._x - a * 2880
             else:
-                return Licznik.dwaczteryH(self) + a * 25000
+                self._x = self._x - 2880
+            b = self._x % 2880
+            return Licznik.dwaczteryH(self) + a * 25000
 
     def tydzien(self):
         if (self._x <= 10080):
             return Licznik.czteryosiemH(self)
         else:
-            self._x = self._x - 10080
             a = self._x // 10080
-            b = self._x % 10080 > 0
-            if (b > 0):
-                return Licznik.czteryosiemH(self) + (a + 1) * 180000
+            if (a > 1):
+                self._x = self._x - a * 10080
             else:
-                return Licznik.czteryosiemH(self) + a * 180000
+                self._x = self._x - 10080
+            b = self._x % 10080
+            return Licznik.czteryosiemH(self) + a * 180000
 
     def miesiac(self):
-        self._x = self._x - 40320
         a = self._x // 40320
-        b = self._x % 40320 > 0
-        if (b > 0):
-            return Licznik.tydzien(self) + (a + 1) * 750000
+        b = self._x % 40320
+        if(a>1):
+            self._x = self._x - a * 40320
         else:
+            self._x = self._x - 40320
+        if (b > 0):
             return Licznik.tydzien(self) + a * 750000
+        else:
+            return a * 750000
 
     def logika(self):
         if(self._x >= 0 and self._x<=60):
@@ -116,18 +79,15 @@ class Licznik:
             return Licznik.dwaczteryH(self)
         elif (self._x>2880 and self._x<=10080):
             return Licznik.czteryosiemH(self)
-        elif (self._x>=10080 and self._x<=40320):
+        elif (self._x>10080 and self._x<=40320):
             return Licznik.tydzien(self)
         elif (self._x>40320):
             return Licznik.miesiac(self)
         else:
             return -1 #błąd
-
-
-
-
-
-
-a=Licznik(2880+121)
-print(a.logika())
-
+f = open('logika.txt', 'w')
+f.write('l.godzin:' + '   ' + 'l.miesiecy:' + '   ' + 'l.tygodni' + '   ' + 'l.48h' + '   ' + 'l.24h' +  '   ' + 'l.kolejnych.godz.' +  '   ' +'l.pierw.godz.' +  '   ' + 'cena: \n')
+for i in range(0,1345*60,60):
+    l=Licznik(i)
+    a=l.logika()
+    f.write(str(i//60) + '      ' + str(i//(24*28*60)) + '      ' + str(i//(24*7*60)) + '      ' + str(i//(24*2*60)) + '      ' + str(i//(24*60)) + '      ' +  str((i//60)-i//(24*60))  +  '      ' + str(i//(24*60)+1) +  '      ' + str(a/100) + ' zł \n')
